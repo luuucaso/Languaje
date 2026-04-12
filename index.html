@@ -4,40 +4,113 @@
   <meta charset="utf-8" />
   <title>Pose Predictor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8.3/dist/teachablemachine-pose.min.js"></script>
+
   <style>
+    /* Reset básico */
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
       margin: 0;
-      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background-color: #f5f7fb;
+      color: #1c1c1e;
+      text-align: center;
     }
 
+    /* Contenedor principal */
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    /* Título */
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    /* Botón */
+    button {
+      background: linear-gradient(135deg, #4A90E2, #357ABD);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 15px 0;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    /* Canvas de cámara */
     canvas {
+      width: 100%;
       max-width: 100%;
       height: auto;
+      border-radius: 16px;
+      margin-top: 10px;
+      box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
+      background: #000;
     }
 
-    #result {
-      font-size: 24px;
-      margin-top: 12px;
+    /* Tarjeta resultado */
+    .result-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0px 8px 20px rgba(0,0,0,0.08);
+    }
+
+    /* Texto principal */
+    .result-text {
+      font-size: 32px;
       font-weight: bold;
     }
 
-    #estadoVoz {
+    /* Confianza */
+    .confidence {
+      font-size: 14px;
+      color: #8e8e93;
+      margin-top: 5px;
+    }
+
+    /* Estado hablando */
+    .speaking {
       margin-top: 10px;
-      color: #555;
       font-size: 16px;
+      color: #4A90E2;
+      font-weight: 500;
     }
   </style>
 </head>
 <body>
-  <h2>Detector de señas</h2>
-  <button onclick="init()">Iniciar cámara</button>
-  <div><canvas id="canvas"></canvas></div>
-  <div id="result">Esperando...</div>
-  <div id="estadoVoz">Voz no iniciada</div>
+  <div class="container">
+    <h1>Detector de señas</h1>
+
+    <button onclick="init()">Iniciar cámara</button>
+
+    <div>
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="result-card">
+      <div id="result" class="result-text">Esperando...</div>
+      <div id="confidence" class="confidence">Confianza: 0%</div>
+      <div id="estadoVoz" class="speaking">Voz no iniciada</div>
+    </div>
+  </div>
 
   <script>
     const URL = "https://teachablemachine.withgoogle.com/models/T-L_vfL0y/";
@@ -140,8 +213,15 @@
         }
       }
 
-      const texto = `${best.className} (${best.probability.toFixed(2)})`;
-      document.getElementById("result").innerText = texto;
+      if (best.probability >= UMBRAL_CONFIANZA) {
+        document.getElementById("result").innerText = best.className;
+        document.getElementById("confidence").innerText =
+          "Confianza: " + (best.probability * 100).toFixed(1) + "%";
+      } else {
+        document.getElementById("result").innerText = "Esperando...";
+        document.getElementById("confidence").innerText =
+          "Confianza: " + (best.probability * 100).toFixed(1) + "%";
+      }
 
       const ahora = Date.now();
 
