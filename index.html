@@ -223,11 +223,11 @@ if (vozIngles) {
       if (best.probability >= UMBRAL_CONFIANZA) {
         document.getElementById("result").innerText = best.className;
         document.getElementById("confidence").innerText =
-          "Confianza: " + (best.probability * 100).toFixed(1) + "%";
+          "Confidence: " + (best.probability * 100).toFixed(1) + "%";
       } else {
-        document.getElementById("result").innerText = "Esperando...";
+        document.getElementById("result").innerText = "Waiting...";
         document.getElementById("confidence").innerText =
-          "Confianza: " + (best.probability * 100).toFixed(1) + "%";
+          "Confidence: " + (best.probability * 100).toFixed(1) + "%";
       }
 
       const ahora = Date.now();
