@@ -99,16 +99,16 @@
   <div class="container">
     <h1>KineSign</h1>
 
-    <button onclick="init()">Iniciar cámara</button>
+    <button onclick="init()">Start camera</button>
 
     <div>
       <canvas id="canvas"></canvas>
     </div>
 
     <div class="result-card">
-      <div id="result" class="result-text">Esperando...</div>
-      <div id="confidence" class="confidence">Confianza: 0%</div>
-      <div id="estadoVoz" class="speaking">Voz no iniciada</div>
+      <div id="result" class="result-text">Waiting...</div>
+      <div id="confidence" class="confidence">Confidence: 0%</div>
+    <div id="estadoVoz" class="speaking">Voice not initialized</div>
     </div>
   </div>
 
@@ -127,44 +127,51 @@
     function cargarVoces() {
       voces = synth.getVoices();
       document.getElementById("estadoVoz").innerText =
-        "Voces detectadas: " + voces.length;
-      console.log("Voces disponibles:", voces);
+        "Detected Voices: " + voces.length;
+      console.log("Available Voices:", voces);
     }
 
     function hablar(texto) {
       if (!("speechSynthesis" in window)) {
         document.getElementById("estadoVoz").innerText =
-          "Este navegador no soporta síntesis de voz";
+          ""This browser does not support speech synthesis"";
         return;
       }
 
       synth.cancel();
 
       const msg = new SpeechSynthesisUtterance(texto);
-      msg.lang = "es-ES";
+      msg.lang = "en-US";
       msg.rate = 1;
       msg.pitch = 1;
 
-      const vozEspanol = voces.find(v => v.lang && v.lang.startsWith("es"));
+
+      const vozIngles = voces.find(v => v.lang && v.lang.startsWith("en"));
+if (vozIngles) {
+  msg.voice = vozIngles;
+}
+    /*  const vozEspanol = voces.find(v => v.lang && v.lang.startsWith("es"));
       if (vozEspanol) {
         msg.voice = vozEspanol;
-      }
+      }*/
 
       msg.onstart = () => {
         document.getElementById("estadoVoz").innerText =
-          "Hablando: " + texto;
+          "Speaking: " + texto;
       };
 
       msg.onend = () => {
         document.getElementById("estadoVoz").innerText =
-          "Última voz: " + texto;
+       "Last spoken: " + texto;
       };
 
       msg.onerror = (e) => {
         document.getElementById("estadoVoz").innerText =
-          "Error de voz: " + e.error;
+         "Voice error: " + e.error;
         console.error("Error TTS:", e);
       };
+
+
 
       synth.speak(msg);
     }
