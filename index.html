@@ -134,7 +134,7 @@
     function hablar(texto) {
       if (!("speechSynthesis" in window)) {
         document.getElementById("estadoVoz").innerText =
-          ""This browser does not support speech synthesis"";
+          "This browser does not support speech synthesis";
         return;
       }
 
